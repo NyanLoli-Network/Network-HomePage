@@ -231,7 +231,7 @@ const featureCards = [
                     <v-card-text>
                         <v-row justify="center" class="mt-2 px-10"> </v-row>
                         <v-row justify="center" class="mt-2 px-10">
-                            <v-col cols="12" sm="3" class="d-flex justify-center">
+                            <v-col cols="12" sm="6" class="d-flex justify-center">
                                 <v-btn
                                     variant="tonal"
                                     color="white"
@@ -242,37 +242,15 @@ const featureCards = [
                                     noc@lolinya.net
                                 </v-btn>
                             </v-col>
-                            <v-col cols="12" sm="3" class="d-flex justify-center">
+                            <v-col cols="12" sm="6" class="d-flex justify-center">
                                 <v-btn
                                     variant="tonal"
                                     color="white"
                                     class="px-4"
-                                    href="https://t.me/Mxmilu"
-                                >
-                                    <v-icon start>mdi-send</v-icon>
-                                    @Mxmilu
-                                </v-btn>
-                            </v-col>
-                            <v-col cols="12" sm="3" class="d-flex justify-center">
-                                <v-btn
-                                    variant="tonal"
-                                    color="white"
-                                    class="px-4"
-                                    href="https://t.me/Ximi1145"
+                                    href="https://t.me/Ximineko"
                                 >
                                     <v-icon start>mdi-send</v-icon>
                                     @Ximineko
-                                </v-btn>
-                            </v-col>
-                            <v-col cols="12" sm="3" class="d-flex justify-center">
-                                <v-btn
-                                    variant="tonal"
-                                    color="white"
-                                    class="px-4"
-                                    href="https://t.me/alongnya"
-                                >
-                                    <v-icon start>mdi-send</v-icon>
-                                    @alongnya
                                 </v-btn>
                             </v-col>
                         </v-row>

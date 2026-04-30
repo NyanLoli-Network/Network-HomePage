@@ -82,7 +82,7 @@ const featureCards = [
         title: 'Professional Operations',
         icon: 'mdi-certificate',
         content:
-            'LoliNya Technology Ltd. provides technical support, committed to delivering stable service for research and education'
+            'NYANLOLI LTD. provides technical support, committed to delivering stable service for research and education'
     }
 ]
 </script>
@@ -96,7 +96,7 @@ const featureCards = [
                 <div class="d-flex justify-center mb-4">
                     <img
                         :src="currentLogo"
-                        alt="LoliNya Network Logo"
+                        alt="NyanLoli Network Logo"
                         class="logo-image"
                     />
                 </div>
@@ -105,7 +105,7 @@ const featureCards = [
                     Research & Education Network
                 </div>
                 <div class="text-caption text-medium-emphasis mt-2 mb-4">
-                    Operated by LoliNya Technology Ltd.
+                    Operated by NYANLOLI LTD.
                 </div>
             </v-col>
         </v-row>
@@ -119,9 +119,9 @@ const featureCards = [
                     </v-card-title>
                     <v-card-text class="text-body-1">
                         <p>
-                            LoliNya Network (AS207529) is a research and education network
+                            NyanLoli Network (AS207529) is a research and education network
                             focused on IPv6 technology learning and research. Operated by
-                            LoliNya Technology Ltd., we are dedicated to exploring the
+                            NYANLOLI LTD., we are dedicated to exploring the
                             application and development of next-generation Internet
                             protocol technologies.
                         </p>
@@ -236,10 +236,10 @@ const featureCards = [
                                     variant="tonal"
                                     color="white"
                                     class="px-4"
-                                    href="mailto:noc@lolinya.net"
+                                    href="mailto:noc@nyanloli.com"
                                 >
                                     <v-icon start>mdi-email</v-icon>
-                                    noc@lolinya.net
+                                    noc@nyanloli.com
                                 </v-btn>
                             </v-col>
                             <v-col cols="12" sm="6" class="d-flex justify-center">
@@ -258,7 +258,7 @@ const featureCards = [
                     <v-card-text class="text-white text-body-1">
                         <p>
                             If you have any questions or need more information about
-                            LoliNya Network, please feel free to contact us
+                            NyanLoli Network, please feel free to contact us
                         </p>
                     </v-card-text>
                 </v-card>
@@ -269,11 +269,11 @@ const featureCards = [
             <v-col cols="12" md="10" lg="8">
                 <v-footer class="text-center d-block py-4 rounded-lg">
                     <div class="text-subtitle-2 text-medium-emphasis">
-                        © {{ new Date().getFullYear() }} LoliNya Network AS207529
+                        © {{ new Date().getFullYear() }} NyanLoli Network AS207529
                     </div>
                     <div class="text-caption text-medium-emphasis mt-1">
-                        LoliNya Network | Research & Education Network | Operated by
-                        LoliNya Technology Ltd.
+                        NyanLoli Network | Research & Education Network | Operated by
+                        NYANLOLI LTD.
                     </div>
                 </v-footer>
             </v-col>

@@ -29,7 +29,7 @@
 VITE_NODE_API_URL=/assets/nodelist.json
 
 # 使用远程API
-VITE_NODE_API_URL=https://api.lolinya.net/v1/nodes
+VITE_NODE_API_URL=https://api.nyanloli.com/v1/nodes
 
 # 使用其他本地文件
 VITE_NODE_API_URL=/data/network-nodes.json

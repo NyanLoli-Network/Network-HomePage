@@ -1,4 +1,4 @@
-# LoliNya Network | AS207529
+# NyanLoli Network | AS207529
 
 ## Internal Community:
 

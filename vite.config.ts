@@ -13,7 +13,7 @@ export default defineConfig({
         vuetify(),
         vueDevTools(),
         Sitemap({
-            hostname: 'https://network.lolinya.net',
+            hostname: 'https://network.nyanloli.com',
             dynamicRoutes: ['/', '/communities']
         })
     ],

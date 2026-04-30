@@ -80,7 +80,7 @@ const formatLocationName = (node: NetworkNode) => {
                         >
                         Contact Email
                     </div>
-                    <div class="info-value">noc@lolinya.net</div>
+                    <div class="info-value">noc@nyanloli.com</div>
                 </div>
 
                 <div class="info-item">

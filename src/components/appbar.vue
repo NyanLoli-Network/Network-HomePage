@@ -115,7 +115,7 @@ const currentLogo = computed(() => {
                     :style="{ 'max-width': mobile ? '170px' : '200px', 'cursor': 'pointer' }"
                     :src="currentLogo"
                     @click="goHome"
-                    alt="LoliNya Network Logo"
+                    alt="NyanLoli Network Logo"
                     class="logo-image"
                 />
                 <span class="text-subtitle-1 ml-2 text-medium-emphasis" v-if="!mobile"

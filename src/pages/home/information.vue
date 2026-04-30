@@ -170,7 +170,7 @@ onMounted(() => {
                         >
                         Operator
                     </div>
-                    <div class="info-value">LoliNya Technology Ltd.</div>
+                    <div class="info-value">NYANLOLI LTD.</div>
                 </div>
 
                 <div class="info-item">

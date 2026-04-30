@@ -16,7 +16,7 @@ const userThemePreference = ref<string | null>(null)
 const router = useRouter()
 
 function goHome() {
-  router.push('/')
+    router.push('/')
 }
 
 // 从 localStorage 获取用户主题偏好
@@ -88,8 +88,18 @@ const navLinks = [
         url: 'https://www.peeringdb.com/net/29458',
         external: true
     },
-    { title: 'BGP.Tools', icon: 'mdi-tools', url: 'https://bgp.tools/as/207529', external: true },
-    { title: 'Looking Glass', icon: 'mdi-magnify', url: '#', external: true },
+    {
+        title: 'BGP.Tools',
+        icon: 'mdi-tools',
+        url: 'https://bgp.tools/as/207529',
+        external: true
+    },
+    {
+        title: 'Looking Glass',
+        icon: 'mdi-magnify',
+        url: 'https://bgp.tools/lg/207529',
+        external: true
+    },
     {
         title: 'BGP Communities',
         icon: 'mdi-tag-multiple',
@@ -98,9 +108,7 @@ const navLinks = [
     }
 ]
 
-const currentLogo = computed(() => {
-    return theme.global.current.value.dark ? '/logo/logo.svg' : '/logo/logo_dark.svg'
-})
+const isDarkMode = computed(() => theme.global.current.value.dark)
 </script>
 
 <template>
@@ -112,11 +120,15 @@ const currentLogo = computed(() => {
         <v-app-bar-title>
             <div class="d-flex align-center">
                 <img
-                    :style="{ 'max-width': mobile ? '170px' : '200px', 'cursor': 'pointer' }"
-                    :src="currentLogo"
+                    :style="{
+                        'max-width': mobile ? '170px' : '200px',
+                        cursor: 'pointer'
+                    }"
+                    src="/logo/logo_dark.svg"
                     @click="goHome"
                     alt="NyanLoli Network Logo"
                     class="logo-image"
+                    :class="{ 'logo-invert': isDarkMode }"
                 />
                 <span class="text-subtitle-1 ml-2 text-medium-emphasis" v-if="!mobile"
                     >AS207529</span
@@ -234,5 +246,9 @@ const currentLogo = computed(() => {
 .logo-image {
     height: auto;
     object-fit: contain;
+}
+
+.logo-invert {
+    filter: invert(1);
 }
 </style>

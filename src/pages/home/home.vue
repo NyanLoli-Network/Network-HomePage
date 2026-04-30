@@ -30,10 +30,7 @@ const networkNodes = ref<NetworkNode[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-// 计算当前应显示的logo
-const currentLogo = computed(() => {
-    return theme.global.current.value.dark ? '/logo/logo.svg' : '/logo/logo_dark.svg'
-})
+const isDarkMode = computed(() => theme.global.current.value.dark)
 
 // 获取网络节点数据
 const fetchNetworkNodes = async () => {
@@ -91,13 +88,14 @@ const featureCards = [
     <v-container fluid>
         <div class="header-background" />
 
-        <v-row justify="center" class="header-section pa-4">
+        <v-row justify="center" align="center" class="header-section pa-4">
             <v-col cols="12" md="10" lg="9" xl="8" class="text-center">
                 <div class="d-flex justify-center mb-4">
                     <img
-                        :src="currentLogo"
+                        src="/logo/logo_dark.svg"
                         alt="NyanLoli Network Logo"
                         class="logo-image"
+                        :class="{ 'logo-invert': isDarkMode }"
                     />
                 </div>
                 <h2 class="text-h5 text-grey-darken-1 mb-4">AS207529</h2>
@@ -110,51 +108,75 @@ const featureCards = [
             </v-col>
         </v-row>
 
-        <v-row justify="center" class="my-6">
-            <v-col cols="12" md="10" lg="8">
-                <v-card elevation="1" class="pa-4 rounded-lg">
-                    <v-card-title>
-                        <v-icon color="primary" class="mr-2">mdi-tag</v-icon>
-                        Network Introduction
-                    </v-card-title>
-                    <v-card-text class="text-body-1">
-                        <p>
-                            NyanLoli Network (AS207529) is a research and education network
-                            focused on IPv6 technology learning and research. Operated by
-                            NYANLOLI LTD., we are dedicated to exploring the
-                            application and development of next-generation Internet
-                            protocol technologies.
-                        </p>
-                        <p class="mt-4">
-                            This network
-                            <span class="text-secondary font-weight-bold"
-                                >supports IPv6 only</span
-                            >, providing professional technical support and services. We
-                            welcome peering with other education and research networks to
-                            promote academic exchange and technological innovation.
-                        </p>
+        <v-row justify="center" class="introduction-section my-6">
+            <v-col cols="12" md="11" lg="10" xl="9">
+                <v-row align="stretch">
+                    <v-col cols="12" md="5">
+                        <v-card
+                            elevation="1"
+                            class="overview-card d-flex flex-column pa-4 rounded-lg"
+                        >
+                            <v-card-title>
+                                <v-icon color="primary" class="mr-2">mdi-tag</v-icon>
+                                Network Introduction
+                            </v-card-title>
+                            <v-card-text class="text-body-1 d-flex flex-column flex-grow-1">
+                                <p>
+                                    NyanLoli Network (AS207529) is a research and education
+                                    network focused on IPv6 technology learning and research.
+                                    Operated by NYANLOLI LTD., we are dedicated to exploring the
+                                    application and development of next-generation Internet
+                                    protocol technologies.
+                                </p>
+                                <p class="mt-4">
+                                    NyanLoli Network was formerly known as LoliNya Network.
+                                </p>
+                                <p class="mt-4">
+                                    This network
+                                    <span class="text-secondary font-weight-bold"
+                                        >supports IPv6 only</span
+                                    >, providing professional technical support and services. We
+                                    welcome peering with other education and research networks to
+                                    promote academic exchange and technological innovation.
+                                </p>
+                                <div class="d-flex flex-wrap ga-2 mt-auto pt-6">
+                                    <v-chip color="primary" variant="tonal">IPv6 Only</v-chip>
+                                    <v-chip color="secondary" variant="tonal">AS207529</v-chip>
+                                    <v-chip color="primary" variant="outlined"
+                                        >Research & Education</v-chip
+                                    >
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
 
-                        <div class="mt-6">
-                            <h3 class="text-h6 mb-3">
+                    <v-col cols="12" md="7">
+                        <v-card elevation="1" class="nodes-card pa-4 rounded-lg">
+                            <v-card-title>
                                 <v-icon color="primary" class="mr-2"
                                     >mdi-map-marker-multiple</v-icon
                                 >
                                 Network Nodes
-                            </h3>
-                            <NetworkMap
-                                :nodes="networkNodes"
-                                :loading="loading"
-                                :error="error"
-                                @retry="fetchNetworkNodes"
-                            />
-                        </div>
-                    </v-card-text>
-                </v-card>
+                            </v-card-title>
+                            <v-card-subtitle>
+                                Current network locations and interconnections.
+                            </v-card-subtitle>
+                            <v-card-text>
+                                <NetworkMap
+                                    :nodes="networkNodes"
+                                    :loading="loading"
+                                    :error="error"
+                                    @retry="fetchNetworkNodes"
+                                />
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
-        
+
         <v-row justify="center" class="my-6">
-            <v-col cols="12" md="10" lg="8" class="mb-2 text-center">
+            <v-col cols="12" md="11" lg="10" xl="9" class="mb-2 text-center">
                 <h2 class="text-h4 font-weight-medium primary--text">
                     <v-icon large color="primary" class="mr-2">mdi-star</v-icon>
                     Network Features
@@ -163,7 +185,7 @@ const featureCards = [
         </v-row>
 
         <v-row justify="center">
-            <v-col cols="12" md="10" lg="8">
+            <v-col cols="12" md="11" lg="10" xl="9">
                 <v-row>
                     <v-col
                         v-for="(card, index) in featureCards"
@@ -182,7 +204,7 @@ const featureCards = [
         </v-row>
         <v-spacer />
         <v-row justify="center" class="my-6">
-            <v-col cols="12" md="10" lg="8">
+            <v-col cols="12" md="11" lg="10" xl="9">
                 <v-divider class="mb-6" />
                 <v-row>
                     <v-col cols="12" md="6">
@@ -200,7 +222,7 @@ const featureCards = [
         </v-row>
 
         <v-row justify="center" class="my-6">
-            <v-col cols="12" md="10" lg="8">
+            <v-col cols="12" md="11" lg="10" xl="9">
                 <v-sheet elevation="2" class="pa-8 text-center rounded-lg">
                     <v-icon color="primary" size="48" class="mb-4"
                         >mdi-tag-multiple-outline</v-icon
@@ -225,7 +247,7 @@ const featureCards = [
         </v-row>
 
         <v-row justify="center" class="my-6">
-            <v-col cols="12" md="10" lg="8">
+            <v-col cols="12" md="11" lg="10" xl="9">
                 <v-card color="primary" class="text-center py-4 px-2 rounded-lg">
                     <v-card-title class="text-h4 text-white">CONTACT US</v-card-title>
                     <v-card-text>
@@ -266,7 +288,7 @@ const featureCards = [
         </v-row>
 
         <v-row justify="center">
-            <v-col cols="12" md="10" lg="8">
+            <v-col cols="12" md="11" lg="10" xl="9">
                 <v-footer class="text-center d-block py-4 rounded-lg">
                     <div class="text-subtitle-2 text-medium-emphasis">
                         © {{ new Date().getFullYear() }} NyanLoli Network AS207529
@@ -283,12 +305,25 @@ const featureCards = [
 
 <style scoped>
 .header-section {
-    margin-top: 180px;
-    margin-bottom: 70px;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    min-height: calc(100vh - var(--v-layout-top, 64px));
+    min-height: calc(100svh - var(--v-layout-top, 64px));
     position: relative;
     z-index: 2;
+}
+
+.introduction-section {
+    margin-top: -280px !important;
+    position: relative;
+    z-index: 2;
+}
+
+.overview-card,
+.nodes-card {
+    height: 100%;
+}
+
+.nodes-card :deep(.network-map-container) {
+    height: 360px;
 }
 
 .header-background {
@@ -309,14 +344,24 @@ const featureCards = [
 }
 
 .logo-image {
-    width: 550px;
+    width: min(550px, 100%);
     height: auto;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.logo-invert {
+    filter: invert(1) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 @media (min-width: 960px) {
     .logo-image {
         max-width: 110%;
+    }
+}
+
+@media (max-width: 959px) {
+    .nodes-card :deep(.network-map-container) {
+        height: 300px;
     }
 }
 

@@ -12,7 +12,7 @@ defineOptions({
 
         <v-row justify="center" class="mt-12 mb-8">
             <v-col cols="12" md="10" lg="8" class="text-center">
-                <h2 class="text-h3 font-weight-medium primary--text">
+                <h2 class="text-h4 text-md-h3 font-weight-medium primary--text">
                     <v-icon color="primary" class="mr-3">mdi-tag-multiple-outline</v-icon>
                     BGP Communities
                 </h2>
@@ -454,12 +454,38 @@ defineOptions({
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
+    /* Community 值保持单行，窄屏时表格横向滚动而不是折行 */
+    th:first-child,
+    td:first-child {
+        white-space: nowrap;
+    }
+
     tr:last-child td {
         border-bottom: none;
     }
 
     tr:hover {
         background-color: rgba(var(--v-theme-primary), 0.03);
+    }
+
+    @media (max-width: 599px) {
+        th,
+        td {
+            padding: 10px 12px;
+            font-size: 0.875rem;
+        }
+    }
+}
+
+/* 卡片各级标题与副标题在窄屏下允许换行 */
+.community-card :deep(.v-card-title),
+.community-card :deep(.v-card-subtitle) {
+    white-space: normal;
+}
+
+@media (max-width: 599px) {
+    .community-card :deep(.v-card-title.text-h5) {
+        font-size: 1.25rem !important;
     }
 }
 

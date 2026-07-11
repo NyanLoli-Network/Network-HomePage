@@ -98,11 +98,13 @@ const featureCards = [
                         :class="{ 'logo-invert': isDarkMode }"
                     />
                 </div>
-                <h2 class="text-h5 text-grey-darken-1 mb-4">AS207529</h2>
-                <div class="text-subtitle-1 text-medium-emphasis mt-4">
+                <h2 class="text-h5 font-weight-light text-medium-emphasis as-number">
+                    AS207529
+                </h2>
+                <div class="text-subtitle-1 text-medium-emphasis mt-3">
                     Research & Education Network
                 </div>
-                <div class="text-caption text-medium-emphasis mt-2 mb-4">
+                <div class="text-caption text-disabled mt-1">
                     Operated by NYANLOLI LTD.
                 </div>
             </v-col>
@@ -251,13 +253,12 @@ const featureCards = [
                 <v-card color="primary" class="text-center py-4 px-2 rounded-lg">
                     <v-card-title class="text-h4 text-white">CONTACT US</v-card-title>
                     <v-card-text>
-                        <v-row justify="center" class="mt-2 px-10"> </v-row>
-                        <v-row justify="center" class="mt-2 px-10">
+                        <v-row justify="center" class="mt-2 px-2 px-sm-10">
                             <v-col cols="12" sm="6" class="d-flex justify-center">
                                 <v-btn
                                     variant="tonal"
                                     color="white"
-                                    class="px-4"
+                                    class="px-4 contact-btn"
                                     href="mailto:noc@nyanloli.com"
                                 >
                                     <v-icon start>mdi-email</v-icon>
@@ -268,7 +269,7 @@ const featureCards = [
                                 <v-btn
                                     variant="tonal"
                                     color="white"
-                                    class="px-4"
+                                    class="px-4 contact-btn"
                                     href="https://t.me/Ximineko"
                                 >
                                     <v-icon start>mdi-send</v-icon>
@@ -322,6 +323,22 @@ const featureCards = [
     height: 100%;
 }
 
+/* v-card-title / v-card-subtitle 默认 nowrap，窄屏下会被截断 */
+.overview-card :deep(.v-card-title),
+.nodes-card :deep(.v-card-title),
+.nodes-card :deep(.v-card-subtitle) {
+    white-space: normal;
+}
+
+.contact-btn {
+    max-width: 100%;
+}
+
+.as-number {
+    letter-spacing: 0.3em !important;
+    text-indent: 0.3em;
+}
+
 .nodes-card :deep(.network-map-container) {
     height: 360px;
 }
@@ -363,11 +380,23 @@ const featureCards = [
     .nodes-card :deep(.network-map-container) {
         height: 300px;
     }
+
+    /* 移动端保持整屏 hero、logo 垂直居中；矮屏（如横屏）取消负边距避免卡片盖住标题 */
+    .introduction-section {
+        margin-top: 0 !important;
+    }
 }
 
 @media (min-width: 1200px) {
     .logo-image {
         max-width: 130%;
+    }
+}
+
+/* 竖屏移动端：卡片上移，在首屏底部露出一截 */
+@media (max-width: 959px) and (min-height: 560px) {
+    .introduction-section {
+        margin-top: -120px !important;
     }
 }
 </style>

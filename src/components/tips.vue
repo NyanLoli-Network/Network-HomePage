@@ -35,8 +35,17 @@ const CardStyle = computed(() => {
 
 <template>
     <v-card class="mb-4 px-4 py-2 d-flex align-center" :style="CardStyle" flat>
-        <div style="font-family: monospace">
+        <div class="tips-content">
             <slot/>
         </div>
     </v-card>
 </template>
+
+<style scoped>
+/* 长的 community 示例在窄屏下横向滚动而不是撑破布局 */
+.tips-content {
+    font-family: monospace;
+    max-width: 100%;
+    overflow-x: auto;
+}
+</style>

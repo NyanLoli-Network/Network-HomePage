@@ -144,12 +144,14 @@ watch(() => props.nodes, () => {
 onMounted(() => {
   if (mapContainer.value) {
     // 初始化地图
+    // 移动端禁用单指拖动，避免滑动页面时被地图拦截；双指缩放仍可用
     map = L.map(mapContainer.value, {
       center: [30, 69],
       zoom: 3,
       zoomControl: true,
       scrollWheelZoom: true,
-      dragging: true
+      dragging: !L.Browser.mobile,
+      touchZoom: true
     })
 
     // 添加地图图层

@@ -34,6 +34,8 @@ const props = withDefaults(defineProps<Props>(), {
 .gradient-header {
     background: linear-gradient(to right, rgb(var(--v-theme-primary), 0.05), transparent);
     border-bottom: 1px solid rgb(var(--v-theme-primary), 0.1);
+    /* 覆盖 v-card-title 默认 nowrap，避免窄屏标题被截断 */
+    white-space: normal;
 }
 
 .content-text {

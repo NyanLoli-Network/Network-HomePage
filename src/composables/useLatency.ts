@@ -85,6 +85,7 @@ const link = (s: string, t: string) => linkMap.value.get(`${s}>${t}`)
 // API 的 name 是提供商名称，页面上不显示；一律以所在地区命名
 
 const REGION_OVERRIDES: Record<string, string> = {
+    CN: 'China Mainland',
     HK: 'Hong Kong',
     MO: 'Macau',
     US: 'United States',

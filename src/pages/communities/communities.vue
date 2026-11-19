@@ -1,509 +1,508 @@
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import TipsComponent from '@/components/tips.vue'
+import { communitySections } from './communities.data'
 
 defineOptions({
     name: 'CommunitiesPage'
 })
+
+const query = ref('')
+const activeSection = ref(communitySections[0].id)
+const copied = ref(false)
+const copiedValue = ref('')
+
+const normalized = computed(() => query.value.trim().toLowerCase())
+
+const indexOf = (id: string) => communitySections.findIndex((s) => s.id === id) + 1
+
+// 搜索时过滤每个分组的行；无匹配的分组整体隐藏
+const sections = computed(() =>
+    communitySections
+        .map((s) => ({
+            ...s,
+            rows: normalized.value
+                ? s.rows.filter((r) =>
+                      `${r.value} ${r.description}`.toLowerCase().includes(normalized.value)
+                  )
+                : s.rows
+        }))
+        .filter((s) => !normalized.value || s.rows.length > 0)
+)
+
+const totalRows = communitySections.reduce((n, s) => n + s.rows.length, 0)
+const totalMatches = computed(() => sections.value.reduce((n, s) => n + s.rows.length, 0))
+
+const copy = async (value: string) => {
+    try {
+        await navigator.clipboard.writeText(value)
+        copiedValue.value = value
+        copied.value = true
+    } catch {
+        /* 剪贴板不可用时静默失败 */
+    }
+}
+
+// 目录高亮：跟随滚动位置
+let observer: IntersectionObserver | null = null
+onMounted(() => {
+    observer = new IntersectionObserver(
+        (entries) => {
+            const visible = entries.filter((e) => e.isIntersecting)
+            if (visible.length) activeSection.value = visible[0].target.id
+        },
+        { rootMargin: '-80px 0px -65% 0px' }
+    )
+    document.querySelectorAll('.cm-section').forEach((el) => observer!.observe(el))
+})
+onUnmounted(() => observer?.disconnect())
 </script>
 
 <template>
-    <v-container fluid>
-        <div class="header-background" />
+    <div class="communities container">
+        <header class="page-head">
+            <div class="grid head-meta">
+                <router-link to="/" class="back mono">← Index</router-link>
+                <span class="mono hm-2">Reference</span>
+                <span class="mono hm-3">{{ totalRows }} entries</span>
+            </div>
+            <h1 class="page-title">BGP<br /><em>Communities</em></h1>
+            <div class="grid head-foot">
+                <p class="lead">
+                    Large communities supported by AS207529 for routing policy control. Click any
+                    value to copy it.
+                </p>
+            </div>
+        </header>
 
-        <v-row justify="center" class="mt-12 mb-8">
-            <v-col cols="12" md="10" lg="8" class="text-center">
-                <h2 class="text-h4 text-md-h3 font-weight-medium primary--text">
-                    <v-icon color="primary" class="mr-3">mdi-tag-multiple-outline</v-icon>
-                    BGP Communities
-                </h2>
-                <div class="mt-3 text-medium-emphasis">
-                    Detailed BGP community policy and routing control information
+        <div class="grid layout">
+            <aside class="toc">
+                <div class="toc-inner">
+                    <span class="label">Contents</span>
+                    <nav>
+                        <a
+                            v-for="(s, i) in communitySections"
+                            :key="s.id"
+                            :href="`#${s.id}`"
+                            :class="{ 'is-active': activeSection === s.id }"
+                        >
+                            <span class="mono">{{ i + 1 }}.</span> {{ s.title }}
+                        </a>
+                    </nav>
+                    <a
+                        class="arrow-link download"
+                        href="https://geofeed.nyalo.li/communities-list.md"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        Download full list <span class="arr">↓</span>
+                    </a>
                 </div>
-            </v-col>
-        </v-row>
+            </aside>
 
-        <v-row justify="center" class="mb-12">
-            <v-col cols="12" md="10" lg="8">
-                <v-card elevation="2" class="rounded-lg community-card">
-                    <v-card-title class="text-h5 primary--text pt-5 px-6">
-                        <v-icon color="primary" class="mr-3">mdi-tag-multiple</v-icon>
-                        BGP Community attributes
-                    </v-card-title>
-                    <v-card-subtitle class="px-6 pb-2 pt-2">
-                        Below is a list of BGP communities supported by our network for
-                        routing policy control
-                    </v-card-subtitle>
+            <div class="content">
+                <label class="search">
+                    <span class="label">Search</span>
+                    <span class="search-row">
+                        <input
+                            v-model="query"
+                            type="search"
+                            placeholder="prepend, 1030, Europe…"
+                            aria-label="Search communities"
+                        />
+                        <span class="search-count mono">
+                            {{ normalized ? totalMatches : totalRows }} / {{ totalRows }}
+                        </span>
+                    </span>
+                </label>
 
-                    <!-- Internal Community -->
-                    <v-card-title class="text-h6 primary--text pt-4 px-6">
-                        <v-icon color="primary" class="mr-3" size="small">mdi-tag</v-icon>
-                        Internal Community
-                    </v-card-title>
-                    <v-card-text class="px-4 pt-2">
-                        <TipsComponent>
-                            &nbsp;(207529, <999, 0)&nbsp;&nbsp;Community for all my
-                            node<br />
-                            &nbsp;(207529, <999, 1)&nbsp;&nbsp;Community only for this
-                            node<br />
-                        </TipsComponent>
-                        <v-table class="community-table">
-                            <thead>
-                                <tr>
-                                    <th>Community Value</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, &lt;999, 0)
-                                    </td>
-                                    <td>Community for all my node</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, &lt;999, 1)
-                                    </td>
-                                    <td>Community only for this node</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 1, *)
-                                    </td>
-                                    <td>do not send to ibgp</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 2, *)
-                                    </td>
-                                    <td>do not send to ebgp</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 3, *)
-                                    </td>
-                                    <td>do not send to kernel</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 4, *)
-                                    </td>
-                                    <td>send to kernel but mark unreachable</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 5, *)
-                                    </td>
-                                    <td>send to kernel but mark blackhole</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 101, *)
-                                    </td>
-                                    <td>allow bgp_local_perf</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 201, *)
-                                    </td>
-                                    <td>transit routes</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 202, *)
-                                    </td>
-                                    <td>ixp rs routes</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 203, *)
-                                    </td>
-                                    <td>peer routes</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 204, *)
-                                    </td>
-                                    <td>customer routes</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 209, *)
-                                    </td>
-                                    <td>ibgp routes</td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-                    </v-card-text>
+                <section v-for="s in sections" :id="s.id" :key="s.id" class="cm-section">
+                    <header class="cm-head">
+                        <span class="cm-idx mono">{{ indexOf(s.id) }}.</span>
+                        <h2 class="cm-title">{{ s.title }}</h2>
+                    </header>
+                    <p class="cm-summary">{{ s.summary }}</p>
 
-                    <!-- Control Community -->
-                    <v-card-title class="text-h6 primary--text pt-4 px-6">
-                        <v-icon color="primary" class="mr-3" size="small"
-                            >mdi-filter</v-icon
-                        >
-                        Control Community
-                    </v-card-title>
-                    <v-card-text class="px-4 pt-2">
-
-                        <TipsComponent>
-                            <strong>Actions:</strong><br />
-                            &nbsp;* = 0 &nbsp;&nbsp;do not announce to target<br />
-                            &nbsp;* = 1 &nbsp;&nbsp;prepend 1 to target<br />
-                            &nbsp;* = 2 &nbsp;&nbsp;prepend 2 to target<br />
-                            &nbsp;* = 4 &nbsp;&nbsp;prepend 4 to target<br />
-                            &nbsp;* = 8 &nbsp;&nbsp;prepend 8 to target
-                        </TipsComponent>
-
-                        <div>
-                            <h4 class="font-weight-medium mb-2">
-                                Action target selector:
-                            </h4>
-                            <v-table class="community-table">
-                                <thead>
-                                    <tr>
-                                        <th>Community Value</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*00, 0)
-                                        </td>
-                                        <td>Do action to everyone</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*01, asn)
-                                        </td>
-                                        <td>Don't do action to this asn</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*02, asn)
-                                        </td>
-                                        <td>Do action to this asn</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*10, 0)
-                                        </td>
-                                        <td>Do action to every region</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*11, region_code)
-                                        </td>
-                                        <td>Don't do action to this region</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*12, region_code)
-                                        </td>
-                                        <td>Do action to this region</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1019, 0)
-                                        </td>
-                                        <td>
-                                            Disable (asn, 1010, 0), (asn, 1011,
-                                            local_region) as default value
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*20, 0)
-                                        </td>
-                                        <td>Do action to every country</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*21, country_code)
-                                        </td>
-                                        <td>Don't do action to this country</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*22, country_code)
-                                        </td>
-                                        <td>Do action to this country</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*30, 1)
-                                        </td>
-                                        <td>Do action to upstreams</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*30, 2)
-                                        </td>
-                                        <td>Do action to ixp rs</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*30, 3)
-                                        </td>
-                                        <td>Do action to peers</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*30, 4)
-                                        </td>
-                                        <td>Do action to downstreams</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-primary font-weight-medium">
-                                            (207529, 1*30, 8)
-                                        </td>
-                                        <td>Do action to route collectors</td>
-                                    </tr>
-                                </tbody>
-                            </v-table>
+                    <TipsComponent v-if="s.callout && !normalized" :title="s.callout.title">
+                        <div class="callout-grid mono">
+                            <template v-for="[k, v] in s.callout.lines" :key="k">
+                                <span class="callout-key">{{ k }}</span>
+                                <span>{{ v }}</span>
+                            </template>
                         </div>
-                    </v-card-text>
+                    </TipsComponent>
 
-                    <!-- Informational Community -->
-                    <v-card-title class="text-h6 primary--text pt-4 px-6">
-                        <v-icon color="primary" class="mr-3" size="small"
-                            >mdi-information-outline</v-icon
-                        >
-                        Informational Community
-                    </v-card-title>
-                    <v-card-text class="px-4 pt-2">
-                        <v-table class="community-table">
+                    <p v-if="s.note" class="cm-note">{{ s.note }}</p>
+
+                    <div v-if="s.rows.length" class="table-wrap">
+                        <table>
                             <thead>
                                 <tr>
-                                    <th>Community Value</th>
-                                    <th>Description</th>
+                                    <th class="mono">{{ s.columns[0] }}</th>
+                                    <th class="mono">{{ s.columns[1] }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 10000, region_code)
+                                <tr v-for="row in s.rows" :key="row.value">
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="value mono"
+                                            :title="`Copy ${row.value}`"
+                                            @click="copy(row.value)"
+                                        >
+                                            {{ row.value }}
+                                        </button>
                                     </td>
-                                    <td>Received from region</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">
-                                        (207529, 10001, country_code)
-                                    </td>
-                                    <td>Received from country</td>
+                                    <td>{{ row.description }}</td>
                                 </tr>
                             </tbody>
-                        </v-table>
-                    </v-card-text>
+                        </table>
+                    </div>
+                </section>
 
-                    <!-- Region Code -->
-                    <v-card-title class="text-h6 primary--text pt-4 px-6">
-                        <v-icon color="primary" class="mr-3" size="small"
-                            >mdi-information-outline</v-icon
-                        >
-                        Region code
-                    </v-card-title>
-                    <v-card-text class="px-4 pt-2">
-                        <v-table class="community-table">
-                            <thead>
-                                <tr>
-                                    <th>Region Code</th>
-                                    <th>Region</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">41</td>
-                                    <td>Europe</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">42</td>
-                                    <td>North America-East</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">43</td>
-                                    <td>North America-Central</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">44</td>
-                                    <td>North America-West</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">45</td>
-                                    <td>Central America</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">46</td>
-                                    <td>South America-Central</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">47</td>
-                                    <td>South America-West</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">48</td>
-                                    <td>Africa-N (above Sahara)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">49</td>
-                                    <td>Africa-S (below Sahara)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">50</td>
-                                    <td>Asia-S (IN, PK, BD)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">51</td>
-                                    <td>Asia-SE (TH, SG, PH, ID, MY)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">52</td>
-                                    <td>Asia-E (JP, KR, TW, HK, CN)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">53</td>
-                                    <td>Pacific&Oceania (AU, NZ, FJ)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">54</td>
-                                    <td>Antarctica</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">55</td>
-                                    <td>Asia-N (RU)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">56</td>
-                                    <td>Asia-W (IR, TR, UAE)</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-primary font-weight-medium">57</td>
-                                    <td>Central Asia (AF, UZ, KZ)</td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-                    </v-card-text>
+                <div v-if="normalized && !sections.length" class="empty">
+                    <p class="empty-title">No match.</p>
+                    <p class="mono empty-q">“{{ query }}”</p>
+                    <button type="button" class="arrow-link" @click="query = ''">
+                        Clear search <span class="arr">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Country Code -->
-                    <v-card-title class="text-h6 primary--text pt-4 px-6">
-                        <v-icon color="primary" class="mr-3" size="small"
-                            >mdi-information-outline</v-icon
-                        >
-                        Country code
-                    </v-card-title>
-                    <v-card-text class="px-4 pt-2">
-                        <p>ISO-3166 numeric-3 country code</p>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer />
-                        <v-btn
-                            color="primary"
-                            variant="text"
-                            prepend-icon="mdi-download"
-                            href="https://geofeed.nyalo.li/communities-list.md"
-                        >
-                            Download full community list
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
+        <v-snackbar
+            v-model="copied"
+            :timeout="1600"
+            location="bottom left"
+            rounded="0"
+            color="primary"
+            class="copy-toast"
+        >
+            <span class="mono">Copied {{ copiedValue }}</span>
+        </v-snackbar>
+    </div>
 </template>
 
 <style scoped lang="scss">
-.header-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-        circle at 0% 0%,
-        rgba(240, 98, 146, 0.15) 0%,
-        rgba(240, 98, 146, 0.07) 15%,
-        rgba(240, 98, 146, 0.03) 30%,
-        transparent 40%
-    );
-    z-index: 0;
-    pointer-events: none;
+.page-head {
+    padding-top: clamp(24px, 3vw, 40px);
+    padding-bottom: clamp(48px, 6vw, 88px);
 }
 
-.community-card {
-    border: 1px solid rgba(var(--v-theme-primary), 0.1);
-    overflow: hidden;
-    transition: all 0.3s ease;
+.head-meta {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-2);
+    padding-bottom: clamp(48px, 8vw, 120px);
+}
+
+.back {
+    grid-column: 1 / span 3;
+    text-decoration: none;
+    color: var(--text);
 
     &:hover {
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        color: var(--accent);
     }
 }
 
-.community-table {
-    border-collapse: separate;
-    border-spacing: 0;
+.hm-2 {
+    grid-column: 4 / span 3;
+}
 
-    th {
-        background-color: rgba(var(--v-theme-primary), 0.05);
-        padding: 12px 16px;
-        font-weight: 600;
+.hm-3 {
+    grid-column: 7 / span 3;
+}
+
+.page-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(60px, 11vw, 168px);
+    line-height: 0.92;
+    font-weight: 300;
+    letter-spacing: -0.055em;
+
+    em {
+        font-style: normal;
+        font-weight: 700;
     }
+}
 
-    td {
-        padding: 12px 16px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
+.head-foot {
+    margin-top: clamp(32px, 4vw, 56px);
+}
 
-    /* Community 值保持单行，窄屏时表格横向滚动而不是折行 */
-    th:first-child,
-    td:first-child {
-        white-space: nowrap;
-    }
+.lead {
+    grid-column: 4 / span 6;
+    margin: 0;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 1.45;
+    color: var(--text-2);
+}
 
-    tr:last-child td {
-        border-bottom: none;
-    }
+/* ---------- layout ---------- */
 
-    tr:hover {
-        background-color: rgba(var(--v-theme-primary), 0.03);
-    }
+.layout {
+    border-top: 1px solid var(--rule);
+}
 
-    @media (max-width: 599px) {
-        th,
-        td {
-            padding: 10px 12px;
-            font-size: 0.875rem;
+.toc {
+    grid-column: 1 / span 3;
+}
+
+.toc-inner {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    padding-top: 16px;
+}
+
+.toc nav {
+    display: flex;
+    flex-direction: column;
+
+    a {
+        display: flex;
+        gap: 10px;
+        padding-block: 8px;
+        border-bottom: 1px solid var(--hair);
+        font-size: 15px;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--text-2);
+        transition:
+            color 0.2s,
+            padding 0.25s var(--ease);
+
+        .mono {
+            font-size: 12px;
+            width: 18px;
+            color: var(--text-3);
+        }
+
+        &:hover {
+            color: var(--text);
+        }
+
+        &.is-active {
+            color: var(--accent);
+            padding-left: 8px;
+
+            .mono {
+                color: var(--accent);
+            }
         }
     }
 }
 
-/* 卡片各级标题与副标题在窄屏下允许换行 */
-.community-card :deep(.v-card-title),
-.community-card :deep(.v-card-subtitle) {
-    white-space: normal;
+.download {
+    margin-top: 32px;
+    font-size: 15px;
 }
 
-@media (max-width: 599px) {
-    .community-card :deep(.v-card-title.text-h5) {
-        font-size: 1.25rem !important;
+.content {
+    grid-column: 4 / -1;
+    min-width: 0;
+}
+
+/* ---------- search ---------- */
+
+.search {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    display: block;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+}
+
+.search-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: clamp(24px, 2.6vw, 34px);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+
+    &::placeholder {
+        color: var(--text-3);
     }
 }
 
-.text-button {
-    letter-spacing: 0.5px;
-    font-weight: 500;
+.search:focus-within {
+    border-bottom-color: var(--accent);
 }
 
-.community-code {
-    background-color: rgba(var(--v-theme-primary), 0.05);
-    border-radius: 8px;
-    padding: 16px;
-    font-family: 'Courier New', Courier, monospace;
-    white-space: pre;
-    overflow-x: auto;
+.search-count {
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+}
+
+/* ---------- sections ---------- */
+
+.cm-section {
+    padding-top: clamp(48px, 6vw, 80px);
+}
+
+.cm-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.cm-idx {
     font-size: 14px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    color: var(--accent);
+}
+
+.cm-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3.6vw, 48px);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.045em;
+}
+
+.cm-summary {
+    margin: 12px 0 28px;
+    max-width: 60ch;
+    font-size: 16px;
     line-height: 1.5;
+    color: var(--text-2);
+}
+
+.cm-note {
+    margin: 0;
+    font-size: 15px;
+    padding-block: 14px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+}
+
+.callout-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 32px;
+    white-space: nowrap;
+    color: var(--text-2);
+}
+
+.callout-key {
+    color: var(--text);
+}
+
+.cm-section :deep(.callout) {
+    margin-bottom: 28px;
+}
+
+/* ---------- table ---------- */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0 16px 8px 0;
+    border-bottom: 1px solid var(--rule);
+}
+
+td {
+    padding: 0 16px 0 0;
+    border-bottom: 1px solid var(--hair);
+    vertical-align: middle;
+}
+
+tbody tr {
+    transition: background-color 0.15s;
+
+    &:hover {
+        background: var(--bg-2);
+    }
+}
+
+/* Community 值保持单行，窄屏时表格横向滚动而不是折行 */
+td:first-child {
+    white-space: nowrap;
+    width: 1%;
+}
+
+.value {
+    display: block;
+    padding: 11px 24px 11px 0;
+    font-size: 13px;
+    color: var(--text);
+    text-align: left;
+    transition: color 0.15s;
+
+    &:hover {
+        color: var(--accent);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--accent);
+    }
+}
+
+.empty {
+    padding-block: 80px;
+}
+
+.empty-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6vw, 88px);
+    font-weight: 300;
+    letter-spacing: -0.05em;
+    line-height: 1;
+}
+
+.empty-q {
+    margin: 12px 0 32px;
+    color: var(--text-2);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+    .toc {
+        display: none;
+    }
+
+    .content,
+    .lead {
+        grid-column: 1 / -1;
+    }
+
+    .back,
+    .hm-2,
+    .hm-3 {
+        grid-column: span 4;
+    }
 }
 </style>

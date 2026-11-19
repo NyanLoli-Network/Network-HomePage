@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import appbar from '@/components/appbar.vue'
+import SiteFooter from '@/components/SiteFooter.vue'
 
 defineOptions({
     name: 'AppComponent'
@@ -9,15 +10,15 @@ defineOptions({
 <template>
     <v-app>
         <appbar />
-        <v-main>
+        <main class="site-main">
             <router-view />
-        </v-main>
+        </main>
+        <SiteFooter />
     </v-app>
 </template>
 
 <style>
-/* 为了避免闪烁，在HTML和body标签上设置背景色过渡 */
-html, body {
-    transition: background-color 0.3s ease;
+.site-main {
+    flex: 1 0 auto;
 }
 </style>

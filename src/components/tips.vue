@@ -1,51 +1,40 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useTheme } from 'vuetify'
-
-const theme = useTheme()
-
 defineOptions({
     name: 'TipsComponent'
 })
 
-const props = defineProps({
-    borderColor: {
-        type: String,
-        default: '#f06292'
-    },
-    lightBackground: {
-        type: String,
-        default: '#fff0f6'
-    },
-    darkBackground: {
-        type: String,
-        default: '#301624'
-    }
-})
-
-const CardStyle = computed(() => {
-    return {
-        borderLeft: `6px solid ${props.borderColor}`,
-        background: theme.global.current.value.dark ? props.darkBackground : props.lightBackground,
-        marginLeft: '12px',
-        marginRight: '12px'
-    }
-})
+defineProps<{
+    title?: string
+}>()
 </script>
 
 <template>
-    <v-card class="mb-4 px-4 py-2 d-flex align-center" :style="CardStyle" flat>
-        <div class="tips-content">
-            <slot/>
+    <aside class="callout">
+        <div v-if="title" class="callout-title mono">{{ title }}</div>
+        <div class="callout-body">
+            <slot />
         </div>
-    </v-card>
+    </aside>
 </template>
 
 <style scoped>
+.callout {
+    border-left: 4px solid var(--accent);
+    padding: 4px 0 4px 18px;
+}
+
+.callout-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
 /* 长的 community 示例在窄屏下横向滚动而不是撑破布局 */
-.tips-content {
-    font-family: monospace;
+.callout-body {
     max-width: 100%;
     overflow-x: auto;
+    font-size: 13px;
 }
 </style>

@@ -3,18 +3,26 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NyanLoli Network (AS207529) is a research and education network focused on IPv6 technology learning and research. Operated by NYANLOLI LTD., we are dedicated to exploring the application and development of next-generation Internet protocol technologies.">
+    <meta name="description" content="NyanLoli Network (AS207529) is a non-profit research and education network focused on IPv6 technology learning and research. Operated by NYANLOLI LTD., we are dedicated to exploring the application and development of next-generation Internet protocol technologies.">
     <meta name="keywords" content="NyanLoli Network, AS207529, IPv6, research network, education network, NyanLoli Technology, peering">
     <meta name="author" content="NYANLOLI LTD.">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f1ec">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#07080a">
     <meta property="og:title" content="NyanLoli Network - Research and Education IPv6 Network">
     <meta property="og:description" content="NyanLoli Network (AS207529) is a research and education network focused on IPv6 technology learning and research, welcoming peering to promote academic exchange.">
     <meta property="og:type" content="website">
-    <title>NyanLoli Network</title>
+    <title>NyanLoli Network · AS207529</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200..800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
-      (function() {
-        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.style.backgroundColor = isDarkMode ? '#121212' : '#FFFFFF';
-        document.documentElement.style.transition = 'background-color 0.3s ease';
+      // 在应用挂载前同步主题背景，避免闪烁（与 useColorMode 保持一致）
+      (function () {
+        var pref = null;
+        try { pref = localStorage.getItem('themePreference'); } catch (e) {}
+        var dark = pref ? pref === 'darkTheme' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.style.backgroundColor = dark ? '#07080a' : '#f2f1ec';
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
       })();
     </script>
   </head>

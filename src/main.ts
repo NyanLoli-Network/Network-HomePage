@@ -1,17 +1,19 @@
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
-import '@/assets/styles/fonts.scss'
+import '@/assets/styles/main.scss'
 
 import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { lightTheme, darkTheme } from '@/assets/styles/theme'
+import { initialThemeName } from '@/composables/useColorMode'
 
 import App from './App.vue'
 import router from './router'
+
 const app = createApp(App)
 const vuetify = createVuetify({
     theme: {
-        defaultTheme: 'lightTheme',
+        defaultTheme: initialThemeName(),
         themes: {
             lightTheme,
             darkTheme
